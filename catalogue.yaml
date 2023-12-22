@@ -16,7 +16,7 @@
 
   - name: Creating the directory
     ansible.builtin.file:
-      path: /home/centos/project-ansible/app
+      path: /app
       state: directory
 
   - name: Download the file to temporary location
