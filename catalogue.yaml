@@ -20,13 +20,9 @@
       state: directory
 
   - name: Download the file to temporary location
-    ansible.builtin.unarchive:
+    ansible.builtin.get_url:
       src: curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
-      dest: /tmp/catalogue.zip
-  
-  - name: Change the directory 
-    ansible.builtin.command:
-      chdir: /app
+      dest: /tmp
   
   - name: Unzip the catalogue files
     ansible.builtin.unarchive:
