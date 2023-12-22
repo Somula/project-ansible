@@ -1,0 +1,73 @@
+- name: Launching catalogue server
+  hosts: catalogue
+  become: yes
+  tasks:
+  - name: disable the old nodejs and enable new nodejs
+    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+    
+  - name: Install nodejs
+    ansible.builtin.dnf:
+      name: nodejs
+      state: present
+
+  - name: Creating the user
+    ansible.builtin.user:
+      name: roboshop
+
+  - name: Creating the directory
+    ansible.builtin.file:
+      path: /home/centos/project-ansible/app
+      state: directory
+
+  - name: Download the file to temporary location
+    ansible.builtin.unarchive:
+      src: curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+      dest: /tmp/catalogue.zip
+  
+  - name: Change the directory 
+    ansible.builtin.command:
+      chdir: /app
+  
+  - name: Unzip the catalogue files
+    ansible.builtin.unarchive:
+      src: /tmp/catalogue.zip
+      dest: /app
+
+  - name: Install the packages
+    ansible.builtin.package:
+      name: npm
+      state: present
+
+  - name: Copying the catalog service
+    ansible.builtin.copy:
+      src: catalogue.service
+      dest: /etc/systemd/system/catalogue.service
+
+  - name: Daemon reload the service
+    ansible.builtin.systemd_service:
+      name: catalogue
+      daemon_reload: true
+
+  - name: Enable and start the catalogue service
+    ansible.builtin.service:
+      name: catalogue
+      state: started
+      enabled: true
+
+  - name: Copying the mongo repo
+    ansible.builtin.copy:
+      src: mongo.repo
+      path: /etc/yum.repos.d/mongo.repo
+  
+  - name: Installing the mongodb client
+    ansible.builtin.package:
+      name: mongodb-org-shell
+      state: present
+
+  - name: Insert the data into the mongodb database
+    ansible.builtin.command: mongo --host mongodb.lingaaws.tech </app/schema/catalogue.js
+
+
+  
+  
+
