@@ -45,10 +45,9 @@
       name: catalogue
       daemon_reload: true
 
-  - name: Enable and start the catalogue service
+  - name: Enable the catalogue service
     ansible.builtin.service:
       name: catalogue
-      state: started
       enabled: true
 
   - name: Copying the mongo repo
@@ -61,10 +60,23 @@
       name: mongodb-org-shell
       state: present
 
+  - name: get the catalogue count
+    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db -db.getSiblingDB("Catalogue"); db.products.count()'
+    register: product_count
+
+    # name: print the count
+    # ansible.builtin.debug:
+    #   msg: "product_count: {{product_count}}"
+
   - name: Insert the data into the mongodb database
     ansible.builtin.shell: mongo --host mongodb.lingaaws.tech < /app/schema/catalogue.js
+    when: product_count.stdout == 0
 
-
+  - name: Enable the catalogue service
+    ansible.builtin.service:
+      name: catalogue
+      state: restarted
+      enabled: true
   
   
 
