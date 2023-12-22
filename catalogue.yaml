@@ -31,9 +31,9 @@
       remote_src: yes
 
   - name: Install the packages
-    ansible.builtin.package:
-      name: npm
-      state: present
+    ansible.builtin.command: npm install
+    args:
+      chdir: /app
 
   - name: Copying the catalog service
     ansible.builtin.copy:
