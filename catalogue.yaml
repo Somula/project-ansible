@@ -21,13 +21,14 @@
 
   - name: Download the file to temporary location
     ansible.builtin.get_url:
-      src: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+      url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
       dest: /tmp
   
   - name: Unzip the catalogue files
     ansible.builtin.unarchive:
       src: /tmp/catalogue.zip
       dest: /app
+      remote_src: yes
 
   - name: Install the packages
     ansible.builtin.package:
