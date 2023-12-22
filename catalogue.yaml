@@ -62,7 +62,7 @@
       state: present
 
   - name: Insert the data into the mongodb database
-    ansible.builtin.command: mongo --host mongodb.lingaaws.tech </app/schema/catalogue.js
+    ansible.builtin.shell: mongo --host mongodb.lingaaws.tech < /app/schema/catalogue.js
 
 
   
