@@ -21,7 +21,7 @@
 
   - name: Download the file to temporary location
     ansible.builtin.get_url:
-      src: curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+      src: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
       dest: /tmp
   
   - name: Unzip the catalogue files
