@@ -57,15 +57,15 @@
 
   - name: Install the mongodb server
     ansible.builtin.dnf:
-      name: mongod
+      name: mongo-org-shell
       state: present
 
   - name: get the user count
-    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db -db.getSiblingDB("users");db.users.count()'
+    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db = db.getSiblingDB("users"); db.users.count()'
     register: users_count
 
   - name: Insert the data into the database if data was not there
-    ansible.builtin.shell: mongo --host mongodb.lingaaws.tech </app/schema/user.js
+    ansible.builtin.shell: mongo --host mongodb.lingaaws.tech < /app/schema/user.js
     where: users_count.stdout == "0"
 
   - name: Start and enable the user server
