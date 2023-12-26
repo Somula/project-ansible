@@ -10,7 +10,7 @@
 
   - name: Install the rabbitmq server
     ansible.builtin.dnf:
-      name: rabbitmq
+      name: rabbitmq-server
       state: present
 
   - name: Enable and start the rabbitmq server
@@ -22,6 +22,6 @@
   - name: Add the user
     ansible.builtin.command:  rabbitmqctl add_user roboshop roboshop123
 
-  - name: Setting the permissions
+  - name: Setting the permissions for user
     ansible.builtin.command:  rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*" 
 
