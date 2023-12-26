@@ -1,5 +1,6 @@
 - name: Creating the redis server
   hosts: redis
+  become: yes
   tasks:
   - name: downloading the repo files
     ansible.builtin.dnf:

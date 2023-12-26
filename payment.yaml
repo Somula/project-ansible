@@ -1,5 +1,6 @@
 - name: Launching the payment service
   hosts: payment
+  become: yes
   tasks:
   - name: Install the python package
     ansible.builtin.dnf:

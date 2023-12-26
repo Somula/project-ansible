@@ -1,5 +1,6 @@
 - name: creating the user configuration
   hosts: user
+  become: yes
   tasks:
   - name: disable the nodejs
     ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y 
@@ -72,7 +73,7 @@
       name: user
       state: started
       enabled: true
-      
+
 
 
 

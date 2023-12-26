@@ -1,5 +1,6 @@
 - name: launching the shipping service
   hosts: shipping
+  become: yes
   vars:
     mysql_password: Roboshop@1
   tasks: 

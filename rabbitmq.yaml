@@ -1,5 +1,6 @@
 - name: Launching the rabbitmq
   hosts: rabbitmq
+  become: yes
   tasks:
   - name: copying the rabbitmq erlang repo
     ansible.builtin.shell: https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | bash
