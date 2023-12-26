@@ -45,7 +45,8 @@
 
   - name: Daemon-reload the payment service
     ansible.builtin.systemd_service:
-    daemon_reload: true
+      name: payment
+      daemon_reload: true
 
   - name: Enable and start the payment service
     ansible.builtin.service:
