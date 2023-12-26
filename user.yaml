@@ -61,12 +61,12 @@
       state: present
 
   - name: get the user count
-    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db -db.getSiblingDB("Users");db.products.count()'
-    register: product_count
+    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db -db.getSiblingDB("users");db.users.count()'
+    register: users_count
 
   - name: Insert the data into the database if data was not there
     ansible.builtin.shell: mongo --host mongodb.lingaaws.tech </app/schema/user.js
-    where: product_count.stdout == "0"
+    where: users_count.stdout == "0"
 
   - name: Start and enable the user server
     ansible.builtin.service:
