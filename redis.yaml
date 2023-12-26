@@ -3,9 +3,7 @@
   become: yes
   tasks:
   - name: downloading the repo files
-    ansible.builtin.dnf:
-      src: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
-      state: present
+    ansible.builtin.command: dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
 
   - name: enable the redis remi
     ansible.builtin.service:
