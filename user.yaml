@@ -57,7 +57,7 @@
 
   - name: Install the mongodb server
     ansible.builtin.package:
-      name: mongo-org-shell
+      name: mongodb-org-shell
       state: present
 
   - name: get the user count
