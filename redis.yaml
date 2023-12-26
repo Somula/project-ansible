@@ -1,0 +1,29 @@
+- name: Creating the redis server
+  hosts: redis
+  tasks:
+  - name: downloading the repo files
+    ansible.builtin.dnf:
+    src: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+    state: present
+
+  - name: enable the redis remi
+    ansible.builtin.service:
+    name: redis:remi-6.2
+    enabled: true
+
+  - name: Install the redis
+    ansible.builtin.dnf:
+      name: redis
+      state: present
+
+  - name: Replace 127.0.0.1 with 0.0.0.0
+    ansible.builtin.replace:
+      path: /etc/redis.conf
+      regexp: '127.0.0.1'
+      replace: '0.0.0.0'
+
+  - name: start and enable the service
+    ansible.builtin.service:
+      name: redis
+      state: started
+      enabled: true

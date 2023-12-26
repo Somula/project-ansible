@@ -1,0 +1,24 @@
+- name: Launching the mysql server
+  hosts: mysql
+  tasks:
+  - name: disable the mysql default version
+    ansible.builtin.shell: dnf module disable mysql -y;
+
+  - name: copying the mysql repos
+    ansible.builtin.copy: 
+      src: mysql.repo
+      dest: /etc/yum.repos.d/mysql.repo
+
+  - name: Installing the mysql
+    ansible.builtin.dnf:
+      name: mysql-community-server
+      state: present
+
+  - name: setting the username and password for the mysql
+    ansible.builtin.shell: mysql_secure_installation --set-root-pass Roboshop@1
+
+  - name: Enable and start the mysqld
+    ansible.builtin.service:
+      name: mysqld
+      state: started
+      enabled: yes

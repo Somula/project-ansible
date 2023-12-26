@@ -70,7 +70,7 @@
 
   - name: Insert the data into the mongodb database
     ansible.builtin.shell: mongo --host mongodb.lingaaws.tech < /app/schema/catalogue.js
-    when: product_count.stdout == 0
+    when: product_count.stdout == "0"
 
   - name: Enable the catalogue service
     ansible.builtin.service:

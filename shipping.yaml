@@ -1,0 +1,72 @@
+- name: launching the shipping service
+  hosts: shipping
+  vars:
+    mysql_password: Roboshop@1
+  tasks: 
+  - name: Install the maven
+    ansible.builtin.dnf:
+      name: maven
+      state: present
+
+  - name: creating the user
+    ansible.builtin.user:
+      name: roboshop
+
+  - name: If app directory exists please remove
+    ansible.builtin.file:
+      name: /app
+      state: absent
+
+  - name: create the directory
+    ansible.builtin.file:
+      name: /app
+      state: directory
+
+  - name: download the application from url
+    ansible.builtin.get_url:
+      url: https://roboshop-builds.s3.amazonaws.com/shipping.zip
+      dest: /tmp
+
+  - name: unzip the file
+    ansible.builtin.unarchive:
+      src: /tmp/shipping.zip
+      dest: /app
+      remote_src: yes
+
+  - name: install the dependencies 
+    ansible.builtin.command: mvn clean package
+    args: 
+      chdir: /app
+
+  - name: Rename the file
+    ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
+    args: 
+      chdir: /app
+
+  - name: copying the shipping service
+    ansible.builtin.copy:
+      src: shipping.service
+      dest: /etc/systemd/system/shipping.service
+
+  - name: daemon-reload the systemctl service
+    ansible.builtin.systemd_service:
+      daemon-reload: true
+
+  - name: Install the mysql
+    ansible.builtin.dnf:
+      name: mysql
+      state: present
+
+  - name: Insert the data into mysql database
+    ansible.builtin.command: mysql -h mysql.lingaaws.tech -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
+    register: schema 
+
+  - name: load the cities information
+    ansible.builtin.shell: "mysql -h mysql.lingaaws.tech -uroot -p{{mysql_password}} < /app/schema/shipping.sql"
+    when: schema.stdout != "1"
+
+  - name: Start and enable the shipping service
+    ansible.builtin.service:
+      name: shipping
+      state: restarted
+      enabled: true

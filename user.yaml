@@ -1,0 +1,79 @@
+- name: creating the user configuration
+  hosts: user
+  tasks:
+  - name: disable the nodejs
+    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y 
+
+  - name: Install the nodejs
+    ansible.builtin.package:
+      name: nodejs
+      state: present
+
+  - name: creating the user roboshop
+    ansible.builtin.user:
+      name: roboshop
+
+  - name: If app directory exist before delete it
+    ansible.builtin.file:
+      name: /app
+      state: absent
+
+  - name: creating the app directory
+    ansible.builtin.file:
+      name: /app
+      state: directory
+
+  - name: Downloading the user application into the directory
+    ansible.builtin.get_url:
+      url: https://roboshop-builds.s3.amazonaws.com/user.zip
+      dest: /tmp
+
+  - name: unzip the files
+    ansible.builtin.unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes
+
+  - name: Install the packages
+    ansible.builtin.command: npm install
+    args:
+      chdir: /app
+
+  - name: copying the user service
+    ansible.builtin.copy:
+      src: user.service
+      dest: /etc/systemd/system/user.service
+
+  - name: daemon-reload the systemctl
+    ansible.builtin.systemd_service:
+      name: user
+      daemon_reload: true
+
+  - name: copying the mongo repo
+    ansible.builtin.copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: Install the mongodb server
+    ansible.builtin.dnf:
+      name: mongod
+      state: present
+
+  - name: get the user count
+    ansible.builtin.command: mongo --host mongodb.lingaaws.tech --quiet --eval 'db -db.getSiblingDB("Users");db.products.count()'
+    register: product_count
+
+  - name: Insert the data into the database if data was not there
+    ansible.builtin.shell: mongo --host mongodb.lingaaws.tech </app/schema/user.js
+    where: product_count.stdout == "0"
+
+  - name: Start and enable the user server
+    ansible.builtin.service:
+      name: user
+      state: started
+      enabled: true
+      
+
+
+
+
