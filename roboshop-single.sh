@@ -23,7 +23,7 @@ aws route53 change-resource-record-sets \
 {
     "Comment": "Creating a record set for cognito endpoint"
     ,"Changes": [{
-    "Action"              : "CREATE"
+    "Action"              : "UPSERT",
     ,"ResourceRecordSet"  : {
         "Name"              : "'$INSTANCES'.'$DOMAIN_NAME'"
         ,"Type"             : "A"
